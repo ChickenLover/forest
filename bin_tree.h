@@ -13,17 +13,17 @@ typedef struct TreeNode {
 }TreeNode;
 
 class BinaryTree {
-    TreeNode *root = NULL;
     int t_depth = 0;
 
     public:
+        TreeNode *root = NULL;
         BinaryTree() { };
+        BinaryTree(std::initializer_list<int> elements);
         ~BinaryTree();
         void insert(const int element);
-        bool get(const int element) const;
-        void remove();
-        std::vector<std::vector<int> > level_traversal() const;
-        std::vector<int> direct_traversal() const;
+        TreeNode* search(const int key) const;
+        void remove(const int key);
+        std::vector<int> level_traversal() const;
         int depth() const;
 
     friend std::ostream &operator<< (std::ostream &os, const BinaryTree &tree);

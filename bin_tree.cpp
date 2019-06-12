@@ -1,4 +1,5 @@
-#include "tree.h"
+#pragma once
+#include "bin_tree.h"
 
 void free_rec(TreeNode *node) {
     if(node) {
@@ -6,6 +7,11 @@ void free_rec(TreeNode *node) {
         free_rec(node->right);
         delete node;
     }
+}
+
+BinaryTree::BinaryTree(std::initializer_list<int> elements) {
+    for(int element: elements)
+        this->insert(element);
 }
 
 BinaryTree::~BinaryTree() {
@@ -23,7 +29,7 @@ void BinaryTree::insert(const int element) {
     TreeNode *insert_to = this->root;
     int insert_level = 2;
     for(; true; insert_level++) {
-        if(element >= insert_to->value){
+        if(element > insert_to->value){
             if(!insert_to->right) {
                 insert_to->right = node;
                 break;
@@ -41,13 +47,22 @@ void BinaryTree::insert(const int element) {
     this->t_depth = this->t_depth < insert_level ? insert_level : this->t_depth;
 }
 
-std::vector<std::vector<int> > BinaryTree::level_traversal() const{
-    std::vector<std::vector<int> > levels;
+TreeNode* BinaryTree::search(const int key) const {
+    TreeNode* node = this->root;
+    while(node) {
+        if(node->value == key)
+            return node;
+        node = key <= node->value ? node->left : node->right;
+    }
+    return NULL;
+}
+
+std::vector<int> BinaryTree::level_traversal() const{
+    std::vector<int> elements;
     std::vector<TreeNode*> vec;
     std::vector<TreeNode*> vec2;
     vec.push_back(this->root);
     for(int level=1; level <= this->t_depth; level++){
-        std::vector<int> elements;
         for(auto node: vec){
             elements.push_back(node->value);
             if(node->left)
@@ -57,13 +72,21 @@ std::vector<std::vector<int> > BinaryTree::level_traversal() const{
         }
         vec = vec2;
         vec2.clear();
-        levels.push_back(elements);
     }
-    return levels;
+    return elements;
 }
 
-std::vector<int> BinaryTree::direct_traversal() const {
-
+std::vector<int> direct_traversal(const TreeNode* root) {
+    std::vector<int> elements;
+    if(root->left)
+        elements = direct_traversal(root->left);
+    elements.push_back(root->value);
+    std::vector<int> right_elements;
+    if(root->right)
+        right_elements = direct_traversal(root->right);
+    elements.reserve(elements.size() + right_elements.size());
+    elements.insert(elements.end(), right_elements.begin(), right_elements.end());
+    return elements;
 }
 
 int BinaryTree::depth() const {
@@ -134,39 +157,4 @@ std::ostream &operator<< (std::ostream &os, const BinaryTree &tree) {
     for(auto line: lines)
         os << line << std::endl;
     return os;   
-}
-
-int main() {
-    BinaryTree tree;
-    /*tree.insert(8);
-    //right
-    tree.insert(12);
-    tree.insert(10);
-    tree.insert(14);
-    tree.insert(9);
-    tree.insert(11);
-    tree.insert(13);
-    tree.insert(15);
-
-    //left
-    tree.insert(4);
-    tree.insert(2);
-    tree.insert(6);
-    tree.insert(1);
-    tree.insert(3);
-    tree.insert(5);
-    tree.insert(7);*/
-    std::string new_el;
-    while(new_el != "stop") {
-        std::cout << "Enter new number or 'stop'> ";
-        std::cin >> new_el;
-        try {
-            int int_el = std::stoi(new_el);
-            tree.insert(int_el);
-        }
-        catch (const std::exception& e){}
-        printf("\033c");
-        std::cout << tree;
-    }
-    return 0;
 }
