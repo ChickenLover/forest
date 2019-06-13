@@ -1,10 +1,13 @@
 CC=g++ --std=c++17
 
-all: tree.o
-	$(CC) -o tree tree.o
+all: bin_tree.o interface.o
+	$(CC) -o tree bin_tree.o interface.o
 
-tree.o: tree.cpp
-	$(CC) -c tree.cpp
+bin_tree.o: bin_tree.cpp
+	$(CC) -c bin_tree.cpp
+
+interface.o: interface.cpp
+	$(CC) -c interface.cpp
 
 clear:
-	rm -f tree tree.o
+	rm -f tree bin_tree.o interface.o

@@ -10,6 +10,7 @@ typedef struct TreeNode {
     int value;
     TreeNode *left = NULL;
     TreeNode *right = NULL;
+    TreeNode *parent = NULL;
 }TreeNode;
 
 class BinaryTree {
@@ -28,3 +29,8 @@ class BinaryTree {
 
     friend std::ostream &operator<< (std::ostream &os, const BinaryTree &tree);
 };
+
+void free_rec(TreeNode *node);
+std::vector<int> direct_traversal(const TreeNode* root);
+TreeNode* successor(TreeNode* node);
+TreeNode* predecessor(TreeNode* node);

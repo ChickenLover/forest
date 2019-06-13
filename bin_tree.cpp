@@ -1,4 +1,3 @@
-#pragma once
 #include "bin_tree.h"
 
 void free_rec(TreeNode *node) {
@@ -55,6 +54,78 @@ TreeNode* BinaryTree::search(const int key) const {
         node = key <= node->value ? node->left : node->right;
     }
     return NULL;
+}
+
+void BinaryTree::remove(const int key) {
+    if(!this->root)
+        return;
+
+    // Find node and his parent =================
+    TreeNode* parent = NULL;
+    TreeNode* node = this->root;
+    bool child_left = false;
+    do {
+        if(node->value == key)
+            break;
+        parent = node;
+        if(key <= node->value) {
+            node = node->left;
+            child_left = true;
+        }
+        else {
+            node = node->right;
+            child_left = false;
+        }
+    } while(node);
+    if(!node)
+        return;
+    // ========================================
+
+    // Find replacement and replace
+    TreeNode* replacement = NULL;
+    if(node->left && node->right) {
+        replacement = node->right;
+        if(replacement->left) {
+            TreeNode* replace_parent = node;
+            while(replacement->left) {
+                replace_parent = replacement;
+                replacement = replacement->left;
+            }
+            replace_parent->left = NULL;
+            replacement->right = node->right;
+        }
+        replacement->left = node->left;
+    }
+    else {
+        replacement = node->left ? node->left : node->right;
+    }
+    if(parent) {
+        if(child_left)
+            parent->left = replacement;
+        else
+            parent->right = replacement;
+    }
+    else
+        this->root = replacement;
+    delete node;
+}
+
+TreeNode* successor(TreeNode* node) {
+    if(!node || !node->right)
+        return NULL;
+    TreeNode* s_node = node->right;
+    while(s_node->left)
+        s_node = s_node->left;
+    return s_node;
+}
+
+TreeNode* predecessor(TreeNode* node) {
+    if(!node || !node->left)
+        return NULL;
+    TreeNode* p_node = node->left;
+    while(p_node->right)
+        p_node = p_node->right;
+    return p_node;
 }
 
 std::vector<int> BinaryTree::level_traversal() const{
@@ -144,13 +215,8 @@ std::vector<std::string> generate_representation(TreeNode *node, int w, char x) 
 }
 
 std::ostream &operator<< (std::ostream &os, const BinaryTree &tree) {
-    /*std::vector<std::vector<int> > levels = tree.level_traversal();
-    for(auto level: levels){
-        for(auto value: level){
-            os << value << " ";
-        }
-        os << std::endl;
-    }*/
+    if(!tree.root)
+        return os;
     char x = 2;
     int w =((1 << tree.depth()) - 1) * x;
     std::vector<std::string> lines = generate_representation(tree.root, w, x);

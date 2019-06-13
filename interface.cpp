@@ -1,5 +1,11 @@
-#pragma once
 #include "bin_tree.h"
+
+void print_node(TreeNode* node) {
+    std::cout << "Node: key = " << node->value
+              << ", left = " << (node->left ? node->left->value : -1)
+              << ", right = " << (node->right ? node->right->value : -1)
+              << std::endl;
+}
 
 int main() {
     BinaryTree tree{8, 12, 10, 14, 9, 11, 13, 15, 4, 2, 6, 1, 3, 5, 7};
@@ -7,11 +13,14 @@ int main() {
     std::string new_line;
     std::string command;
     std::string operand;
+    TreeNode* search_result = NULL;
     while(std::getline(std::cin, new_line)) {
         std::stringstream linestream(new_line);
         linestream >> command;
+
         if(command == "stop")
             break;
+
         if(command == "d_traversal") {
             std::vector<int> direct_elements = direct_traversal(tree.root);
             for(auto i: direct_elements)
@@ -19,6 +28,7 @@ int main() {
             std::cout << std::endl;
             continue;
         }
+
         if(command == "l_traversal") {
             std::vector<int> level_elements = tree.level_traversal();
             for(auto i: level_elements)
@@ -26,10 +36,38 @@ int main() {
             std::cout << std::endl;
             continue;
         }
-        if(command == "print") {
+
+        if(command == "print" || command == "p") {
             std::cout << tree;
             continue;
         }
+
+        if(command == "pred") {
+            if(!search_result)
+                std::cout << "Make successful search operation first!" << std::endl;
+            else {
+                TreeNode* pred = predecessor(search_result);
+                if(pred)
+                    print_node(pred);
+                else
+                    std::cout << "Not found!" << std::endl;
+            }
+            continue;
+        }
+
+        if(command == "succ") {
+            if(!search_result)
+                std::cout << "Make successful search operation first!" << std::endl;
+            else {
+                TreeNode* succ = successor(search_result);
+                if(succ)
+                    print_node(succ);
+                else
+                    std::cout << "Not found!" << std::endl;
+            }
+            continue;
+        }
+
         if(command == "insert") {
             linestream >> operand;
             try {
@@ -41,20 +79,26 @@ int main() {
             }
             continue;
         }
+
         if(command == "remove") {
             linestream >> operand;
+            try {
+                int key = std::stoi(operand);
+                tree.remove(key);
+            }
+            catch (const std::exception& e) {
+                std::cout << "Operand is not integer!" << std::endl;
+            }
             continue;
         }
+
         if(command == "search") {
             linestream >> operand;
             try {
                 int key = std::stoi(operand);
-                TreeNode* node = tree.search(key);
-                if(node)
-                    std::cout << "Node: key = " << node->value
-                              << ", left = " << (node->left ? node->left->value : -1)
-                              << ", right = " << (node->right ? node->right->value : -1)
-                              << std::endl;
+                search_result = tree.search(key);
+                if(search_result)
+                    print_node(search_result);
                 else
                     std::cout << "Not found!" << std::endl;
             }
