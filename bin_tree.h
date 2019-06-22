@@ -7,7 +7,7 @@
 
 
 typedef struct BinaryTreeNode {
-    int value;
+    unsigned int value;
     BinaryTreeNode *left = NULL;
     BinaryTreeNode *right = NULL;
 }BinaryTreeNode;
