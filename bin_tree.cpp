@@ -1,6 +1,7 @@
 #include "bin_tree.h"
 
-void free_rec(TreeNode *node) {
+
+void BinaryTree::free_rec(BinaryTreeNode *node) {
     if(node) {
         free_rec(node->left);
         free_rec(node->right);
@@ -18,14 +19,14 @@ BinaryTree::~BinaryTree() {
 }
 
 void BinaryTree::insert(const int element) {
-    TreeNode *node = new TreeNode({element});
+    BinaryTreeNode *node = new BinaryTreeNode({element});
     std::cout << "Inserting " << node->value << std::endl;
     if(!this->root) {
         this->root = node;
         this->t_depth = 1;
         return;
     }
-    TreeNode *insert_to = this->root;
+    BinaryTreeNode *insert_to = this->root;
     int insert_level = 2;
     for(; true; insert_level++) {
         if(element > insert_to->value){
@@ -43,11 +44,11 @@ void BinaryTree::insert(const int element) {
             insert_to = insert_to->left;
         }
     }
-    this->t_depth = this->t_depth < insert_level ? insert_level : this->t_depth;
+    this->t_depth = std::max(this->t_depth, insert_level);
 }
 
-TreeNode* BinaryTree::search(const int key) const {
-    TreeNode* node = this->root;
+BinaryTreeNode* BinaryTree::search(const int key) const {
+    BinaryTreeNode* node = this->root;
     while(node) {
         if(node->value == key)
             return node;
@@ -61,8 +62,8 @@ void BinaryTree::remove(const int key) {
         return;
 
     // Find node and his parent =================
-    TreeNode* parent = NULL;
-    TreeNode* node = this->root;
+    BinaryTreeNode* parent = NULL;
+    BinaryTreeNode* node = this->root;
     bool child_left = false;
     do {
         if(node->value == key)
@@ -82,11 +83,11 @@ void BinaryTree::remove(const int key) {
     // ========================================
 
     // Find replacement and replace
-    TreeNode* replacement = NULL;
+    BinaryTreeNode* replacement = NULL;
     if(node->left && node->right) {
         replacement = node->right;
         if(replacement->left) {
-            TreeNode* replace_parent = node;
+            BinaryTreeNode* replace_parent = node;
             while(replacement->left) {
                 replace_parent = replacement;
                 replacement = replacement->left;
@@ -110,19 +111,19 @@ void BinaryTree::remove(const int key) {
     delete node;
 }
 
-TreeNode* successor(TreeNode* node) {
+BinaryTreeNode* BinaryTree::successor(BinaryTreeNode* node) {
     if(!node || !node->right)
         return NULL;
-    TreeNode* s_node = node->right;
+    BinaryTreeNode* s_node = node->right;
     while(s_node->left)
         s_node = s_node->left;
     return s_node;
 }
 
-TreeNode* predecessor(TreeNode* node) {
+BinaryTreeNode* BinaryTree::predecessor(BinaryTreeNode* node) {
     if(!node || !node->left)
         return NULL;
-    TreeNode* p_node = node->left;
+    BinaryTreeNode* p_node = node->left;
     while(p_node->right)
         p_node = p_node->right;
     return p_node;
@@ -130,10 +131,10 @@ TreeNode* predecessor(TreeNode* node) {
 
 std::vector<int> BinaryTree::level_traversal() const{
     std::vector<int> elements;
-    std::vector<TreeNode*> vec;
-    std::vector<TreeNode*> vec2;
+    std::vector<BinaryTreeNode*> vec;
+    std::vector<BinaryTreeNode*> vec2;
     vec.push_back(this->root);
-    for(int level=1; level <= this->t_depth; level++){
+    while(vec2.size()){
         for(auto node: vec){
             elements.push_back(node->value);
             if(node->left)
@@ -141,20 +142,26 @@ std::vector<int> BinaryTree::level_traversal() const{
             if(node->right)
                 vec2.push_back(node->right);
         }
-        vec = vec2;
+        vec = vec2; // Swap
         vec2.clear();
     }
     return elements;
 }
 
-std::vector<int> direct_traversal(const TreeNode* root) {
+
+std::vector<int> BinaryTree::direct_traversal() const{
+    return _direct_traversal(this->root);
+}
+
+
+std::vector<int> BinaryTree::_direct_traversal(const BinaryTreeNode* node) {
     std::vector<int> elements;
-    if(root->left)
-        elements = direct_traversal(root->left);
-    elements.push_back(root->value);
+    if(node->left)
+        elements = _direct_traversal(node->left);
+    elements.push_back(node->value);
     std::vector<int> right_elements;
-    if(root->right)
-        right_elements = direct_traversal(root->right);
+    if(node->right)
+        right_elements = _direct_traversal(node->right);
     elements.reserve(elements.size() + right_elements.size());
     elements.insert(elements.end(), right_elements.begin(), right_elements.end());
     return elements;
@@ -164,7 +171,7 @@ int BinaryTree::depth() const {
     return this->t_depth;
 }
 
-std::vector<std::string> generate_representation(TreeNode *node, int w, char x) {
+std::vector<std::string> BinaryTree::generate_representation(BinaryTreeNode *node, int w, char x) {
     std::vector<std::string> lines;
     std::ostringstream ss;
     // ss << std::setfill('0');
@@ -219,7 +226,7 @@ std::ostream &operator<< (std::ostream &os, const BinaryTree &tree) {
         return os;
     char x = 2;
     int w =((1 << tree.depth()) - 1) * x;
-    std::vector<std::string> lines = generate_representation(tree.root, w, x);
+    std::vector<std::string> lines = BinaryTree::generate_representation(tree.root, w, x);
     for(auto line: lines)
         os << line << std::endl;
     return os;   

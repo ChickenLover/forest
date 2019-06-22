@@ -1,6 +1,6 @@
 #include "bin_tree.h"
 
-void print_node(TreeNode* node) {
+void print_node(BinaryTreeNode* node) {
     std::cout << "Node: key = " << node->value
               << ", left = " << (node->left ? node->left->value : -1)
               << ", right = " << (node->right ? node->right->value : -1)
@@ -13,7 +13,7 @@ int main() {
     std::string new_line;
     std::string command;
     std::string operand;
-    TreeNode* search_result = NULL;
+    BinaryTreeNode* search_result = NULL;
     while(std::getline(std::cin, new_line)) {
         std::stringstream linestream(new_line);
         linestream >> command;
@@ -22,7 +22,7 @@ int main() {
             break;
 
         if(command == "d_traversal") {
-            std::vector<int> direct_elements = direct_traversal(tree.root);
+            std::vector<int> direct_elements = tree.direct_traversal();
             for(auto i: direct_elements)
                 std::cout << i << " ";
             std::cout << std::endl;
@@ -46,7 +46,7 @@ int main() {
             if(!search_result)
                 std::cout << "Make successful search operation first!" << std::endl;
             else {
-                TreeNode* pred = predecessor(search_result);
+                BinaryTreeNode* pred = BinaryTree::predecessor(search_result);
                 if(pred)
                     print_node(pred);
                 else
@@ -59,7 +59,7 @@ int main() {
             if(!search_result)
                 std::cout << "Make successful search operation first!" << std::endl;
             else {
-                TreeNode* succ = successor(search_result);
+                BinaryTreeNode* succ = BinaryTree::successor(search_result);
                 if(succ)
                     print_node(succ);
                 else

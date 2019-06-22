@@ -6,31 +6,32 @@
 #include <math.h>
 
 
-typedef struct TreeNode {
+typedef struct BinaryTreeNode {
     int value;
-    TreeNode *left = NULL;
-    TreeNode *right = NULL;
-    TreeNode *parent = NULL;
-}TreeNode;
+    BinaryTreeNode *left = NULL;
+    BinaryTreeNode *right = NULL;
+}BinaryTreeNode;
+
 
 class BinaryTree {
     int t_depth = 0;
+    BinaryTreeNode *root = NULL;
 
     public:
-        TreeNode *root = NULL;
         BinaryTree() { };
         BinaryTree(std::initializer_list<int> elements);
         ~BinaryTree();
         void insert(const int element);
-        TreeNode* search(const int key) const;
+        BinaryTreeNode* search(const int key) const;
         void remove(const int key);
         std::vector<int> level_traversal() const;
+        std::vector<int> direct_traversal() const;
         int depth() const;
+        static void free_rec(BinaryTreeNode *node);
+        static std::vector<int> _direct_traversal(const BinaryTreeNode* node);
+        static BinaryTreeNode* successor(BinaryTreeNode* node);
+        static BinaryTreeNode* predecessor(BinaryTreeNode* node);
+        static std::vector<std::string> generate_representation(BinaryTreeNode *node, int w, char x);
 
     friend std::ostream &operator<< (std::ostream &os, const BinaryTree &tree);
 };
-
-void free_rec(TreeNode *node);
-std::vector<int> direct_traversal(const TreeNode* root);
-TreeNode* successor(TreeNode* node);
-TreeNode* predecessor(TreeNode* node);
