@@ -42,6 +42,11 @@ int main() {
             continue;
         }
 
+        if(command == "depth" || command == "d") {
+            std::cout << "Depth is: " << tree.depth() << std::endl;
+            continue;
+        }
+
         if(command == "pred") {
             if(!search_result)
                 std::cout << "Make successful search operation first!" << std::endl;

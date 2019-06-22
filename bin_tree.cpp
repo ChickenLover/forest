@@ -14,6 +14,11 @@ BinaryTree::BinaryTree(std::initializer_list<int> elements) {
         this->insert(element);
 }
 
+BinaryTree::BinaryTree(BinaryTreeNode *root) {
+    this->root = root;
+    this->depth(); // Recalculate height
+}
+
 BinaryTree::~BinaryTree() {
     free_rec(this->root);
 }
@@ -44,7 +49,7 @@ void BinaryTree::insert(const int element) {
             insert_to = insert_to->left;
         }
     }
-    this->t_depth = std::max(this->t_depth, insert_level);
+    this->t_depth = std::max(this->depth(), insert_level);
 }
 
 BinaryTreeNode* BinaryTree::search(const int key) const {
@@ -109,6 +114,7 @@ void BinaryTree::remove(const int key) {
     else
         this->root = replacement;
     delete node;
+    this->t_depth = -1; // As we don't know if depth had decreemented, set depth to unknown
 }
 
 BinaryTreeNode* BinaryTree::successor(BinaryTreeNode* node) {
@@ -167,7 +173,16 @@ std::vector<int> BinaryTree::_direct_traversal(const BinaryTreeNode* node) {
     return elements;
 }
 
-int BinaryTree::depth() const {
+int BinaryTree::_depth(const BinaryTreeNode *node) {
+    if(!node)
+        return 0;
+    return std::max(_depth(node->left),  _depth(node->right)) + 1;
+}
+
+int BinaryTree::depth() {
+    if(this->t_depth == -1) {
+        this->t_depth = _depth(this->root);
+    }
     return this->t_depth;
 }
 
@@ -221,7 +236,7 @@ std::vector<std::string> BinaryTree::generate_representation(BinaryTreeNode *nod
     return lines;
 }
 
-std::ostream &operator<< (std::ostream &os, const BinaryTree &tree) {
+std::ostream &operator<< (std::ostream &os, BinaryTree &tree) {
     if(!tree.root)
         return os;
     char x = 2;
